@@ -4,4 +4,9 @@ djangorestframework
 clickhouse-connect
 dotenv
 pandas
+<<<<<<< HEAD
+=======
+dbt-core
+dbt-clickhouse
+>>>>>>> c0cc2ce (adding requirements)
 django
