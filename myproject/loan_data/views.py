@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
 from loan_data.services.clickhouse_connector import get_clickhouse_client
 from loan_data.services.warehouse_loader import load_s3_csvs_to_clickhouse
 
@@ -30,6 +32,35 @@ class ClickHouseColumnNamesView(APIView):
         
         except Exception as e: 
             return JsonResponse({"error": str(e)}, status=500)
+        
+class FieldMappingsView(APIView):
+    def post(self, request):
+        """
+        Receive and process field mappings from the frontend.
+        Expected format: {
+            "mappings": [
+                {"source": "document_type", "target": "doc_type"},
+                {"source": "interest_rate", "target": "rate_of_interest"},
+                ...
+            ]
+        }
+        """
+        try:
+            mappings = request.data.get('mappings', [])
+            
+            # Here you can add your logic to save or process the mappings
+            # For example, save to database or use for data transformation
+            print(mappings)
+            
+            return Response({
+                "message": "Mappings received successfully",
+                "mappings": mappings
+            }, status=status.HTTP_200_OK)
+            
+        except Exception as e:
+            return Response({
+                "error": str(e)
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class S3DataLoadView(APIView):
     def post(self, request):
