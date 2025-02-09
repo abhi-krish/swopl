@@ -1,0 +1,12 @@
+dbt_project:  # Match this with the "profile" in dbt_project.yml
+  target: dev
+  outputs:
+    dev:
+      type: clickhouse
+      schema: default   # Change this if needed
+      user: default
+      password: .1jZzP664r4mg  # Update this
+      host: s5e4vz6dh3.us-west-2.aws.clickhouse.cloud  # Example: s5e4vz6dh3.us-west-2.aws.clickhouse.cloud
+      port: 443  # ClickHouse Cloud uses HTTPS (port 443)
+      secure: true
+      threads: 4
