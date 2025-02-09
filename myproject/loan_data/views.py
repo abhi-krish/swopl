@@ -17,17 +17,16 @@ class ClickHouseColumnNamesView(APIView):
             tables_result = client.query(tables_query).result_set
             table_names = [row[0] for row in tables_result]  # Extract table names
             
-            all_columns = {}
+            all_columns = set()
 
             for table in table_names:
                 # Get columns for each table
                 describe_query = f"DESCRIBE TABLE `{table}`"
                 result = client.query(describe_query).result_set
-                columns = [row[0] for row in result]  # Extract column names
+                for row in result:
+                    all_columns.add(row[0])
 
-                all_columns[table] = columns
-
-            return JsonResponse({"tables": all_columns}, safe=False)
+            return JsonResponse({"tables": list(all_columns)}, safe=False)
         
         except Exception as e: 
             return JsonResponse({"error": str(e)}, status=500)

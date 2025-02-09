@@ -45,7 +45,7 @@ def load_s3_csvs_to_clickhouse():
     
     files = s3.list_files()  # List CSV files in S3 bucket
     
-    for file in files[1:]:
+    for file in files:
         table_name = file.split(".")[0].lower().replace(" ", "_")  # Convert filename to table name
         s3_path = f"s3://lenderdata/{file}"  # Construct S3 URL
         
