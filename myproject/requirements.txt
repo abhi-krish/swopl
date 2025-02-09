@@ -1,0 +1,6 @@
+boto3
+clickhouse-driver
+djangorestframework
+clickhouse-connect
+dotenv
+pandas

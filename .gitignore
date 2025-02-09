@@ -1,0 +1,30 @@
+# Python environment & dependencies
+env/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.sqlite3
+
+# Secrets & config files
+.env
+config.yaml
+dbt_profiles.yml
+
+# Logs & cache
+logs/
+*.log
+.DS_Store
+
+# dbt generated files
+dbt_packages/
+target/
+dbt_modules/
+manifest.json
+run_results.json
+
+# Ignore VSCode & JetBrains settings
+.vscode/
+.idea/
