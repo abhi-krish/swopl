@@ -1,6 +1,7 @@
 # Python environment & dependencies
 env/
 venv/
+myenv/
 __pycache__/
 *.pyc
 *.pyo

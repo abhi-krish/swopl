@@ -4,3 +4,4 @@ djangorestframework
 clickhouse-connect
 dotenv
 pandas
+django
