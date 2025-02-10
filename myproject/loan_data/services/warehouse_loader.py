@@ -36,8 +36,6 @@ def insert_csv_from_s3(client, table_name, s3_path):
     client.command(query)
 
 
-
-
 def load_s3_csvs_to_clickhouse():
     """Load all CSVs from S3 into ClickHouse."""
     s3 = S3Fetcher()
@@ -58,3 +56,12 @@ def load_s3_csvs_to_clickhouse():
         print(f"🚀 Finished processing {file}.")
 
     print("✅ All S3 CSV files loaded into ClickHouse.")
+
+
+def store_schema_mapping(mapping_json):
+    client = get_clickhouse_client()
+    query = """
+    INSERT INTO schema_mappings (raw_table, internal_table, mappings)
+    VALUES (%s, %s, %s)
+    """
+    client.command(query, (mapping_json["raw_table"], mapping_json["internal_table"], json.dumps(mapping_json["mappings"])))
