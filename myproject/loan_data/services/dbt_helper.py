@@ -1,10 +1,12 @@
 from openai import OpenAI
+from google import genai
 import json
 import os
 import requests
 from loan_data.services.clickhouse_connector import get_clickhouse_client
 
-client = OpenAI(api_key="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")
+OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
+client = OpenAI(api_key=OPENAI_API_KEY)
 DBT_MODELS_PATH = "dbt_project/models/"
 API_BASE_URL = "http://127.0.0.1:8000/api"
 
@@ -52,25 +54,26 @@ def generate_dbt_models(raw_tables, cleansed_tables, column_mappings):
 
         ### IMPORTANT:
         - **ClickHouse Compatibility:**
-        - Use only functions and type casts supported by ClickHouse. For example, use `toDate()` for date conversions (not `TO_DATE()`).
-        - Use ClickHouse data types exactly as defined (e.g., `Float64`, `Decimal(precision, scale)`) and do not change the type of a column arbitrarily.
+            - Use only functions and type casts supported by ClickHouse. For example, use `toDate()` for date conversions (not `TO_DATE()`).
+            - Use ClickHouse data types exactly as defined (e.g., `Float64`, `Decimal(precision, scale)`) and do not change the type of a column arbitrarily.
         - **Column Casting & Data Types:**
-        - **Do not cast columns to numeric types if they contain non-numeric values.** For instance, if `loan_id` is a UUID (or a string) in any table, do not cast it to an `Int32`.
-        - Ensure that the join keys (e.g., `loan_id`) have the same data type in every table or CTE. Apply casts only where necessary and ensure the casts occur when the column is first defined, not later referencing a parent scope.
+            - **Do not cast columns to numeric types if they contain non-numeric values.** For instance, if `loan_id` is a UUID (or a string) in any table, do not cast it to an `Int32`.
+            - Ensure that the join keys (e.g., `loan_id`) have the same data type in every table or CTE. Apply casts only where necessary and ensure the casts occur when the column is first defined, not later referencing a parent scope.
         - **CTE Scope and Aliasing:**
-        - All CTEs and subqueries must use consistent and correct aliases. For example, if you alias a table as `doc` in a CTE, then use `doc.loan_id` in joins—not another alias.
-        - Avoid referencing parent scope columns with cast functions that aren’t supported in ClickHouse (e.g., do not wrap a parent column with `CAST()` in a subquery if that column was not defined there).
-        - **Syntax:**
-        - Ensure all quotes and backticks are properly opened and closed. No stray or unmatched quotes.
+            - All CTEs and subqueries must use consistent and correct aliases. For example, if you alias a table as `doc` in a CTE, then use `doc.loan_id` in joins—not another alias.
+            - Avoid referencing parent scope columns with cast functions that aren’t supported in ClickHouse (e.g., do not wrap a parent column with `CAST()` in a subquery if that column was not defined there).
+        - **Syntax & dbt Jinja Macros:**
+            - Ensure all quotes and backticks are properly opened and closed. No stray or unmatched quotes.
+            - **Important: Use the correct Jinja syntax for control flow statements.** Always enclose dbt macros with `{{% ... %}}` tags. For example, for incremental models use `{{% if is_incremental() %}}` and `{{% endif %}}` (do NOT use `{{ if is_incremental() }}`).
         - **Table Names & Incremental Processing:**
-        - Fully qualify all table names. **DO NOT USE REF!!**
-            - The raw tables are in the `default` database.
-            - The cleansed tables are in the `internal_loan_data` database.
-        - Use incremental processing with a `unique_key` for efficient updates.
+            - Fully qualify all table names. **DO NOT USE REF!!**
+                - The raw tables are in the `default` database.
+                - The cleansed tables are in the `internal_loan_data` database.
+            - Use incremental processing with a `unique_key` for efficient updates.
         - **Transformation Requirements:**
-        - Use the provided column mappings to rename fields.
-        - Infer joins based on common columns (e.g., `borrower_id`).
-        - Apply necessary transformations, including proper CAST operations and date conversions, ensuring that join keys and other columns retain compatible types.
+            - Use the provided column mappings to rename fields.
+            - Infer joins based on common columns (e.g., `borrower_id`).
+            - Apply necessary transformations, including proper CAST operations and date conversions, ensuring that join keys and other columns retain compatible types.
 
         ### Raw Tables:
         {json.dumps(raw_tables, indent=2)}
