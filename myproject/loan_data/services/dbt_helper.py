@@ -4,7 +4,6 @@ import json
 import os
 import requests
 from loan_data.services.clickhouse_connector import get_clickhouse_client
-
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
 client = OpenAI(api_key=OPENAI_API_KEY)
 DBT_MODELS_PATH = "dbt_project/models/"
@@ -12,7 +11,7 @@ API_BASE_URL = "http://127.0.0.1:8000/api"
 
 def get_table_definitions(database):
     """
-    Fetch table definitions from ClickHouse API.
+    Fetch table definitions from the ClickHouse API.
     
     :param database: The ClickHouse database to fetch tables from.
     :param table_type: 'raw' or 'cleansed' (defines which tables to fetch).
